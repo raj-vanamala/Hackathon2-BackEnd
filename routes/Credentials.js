@@ -22,14 +22,19 @@ router.post('/signUp',async function(req,res){
       let client = await MongoDb.connect(url);
       let db = await client.db("users");
     
-      let data = await db.collection("hack3Users").insertOne({
+      let data = await db.collection("hack2Users").insertOne({
 
         "email" : req.body.email,
         "firstName" : req.body.firstName,
         "password" : req.body.password,
-        "mobile" : req.body.mobile,
-        "status" : req.body.status,
-        "handle" : req.body.handle,
+        "mobile" : req.body.mobile
+      })
+
+      let data1 = await db.collection("Cart").insertOne({
+
+        "handle" : req.body.email,
+        cart : []
+        
       })
 
       let jwtToken = await jwt.sign({email : req.body.email,firstName : req.body.firstName},process.env.JWT,{expiresIn : "1h"}) 
@@ -39,8 +44,6 @@ router.post('/signUp',async function(req,res){
         "email" : req.body.email,
         "firstName" : req.body.firstName,
         "mobile" : req.body.mobile,
-        "status" : req.body.status,
-        "handle" : req.body.handle
       }
       res.json({
         "token" : jwtToken,
@@ -63,7 +66,7 @@ router.post('/signIn',async function(req,res){
     let client = await MongoDb.connect(url);
     let db = await client.db("users");
 
-      let user = await db.collection("hack3Users").findOne({email : req.body.email})
+      let user = await db.collection("hack2Users").findOne({email : req.body.email})
 
       let result = await bcrypt.compare(req.body.password,user.password)
       if(result === true) {
@@ -87,6 +90,35 @@ router.post('/signIn',async function(req,res){
       }
     await client.close();
 
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.post('/submitRequest',async function(req,res){
+
+  try {
+
+    let url = process.env.DB1;
+    let client = await MongoDb.connect(url);
+    let db = await client.db("users");
+  
+    let data = await db.collection("userRequests").insertOne({
+
+      "email" : req.body.email,
+      "firstName" : req.body.firstName,
+      "mobile" : req.body.mobile,
+      "RequestInfo" : req.body.RequestInfo
+    })
+
+    await client.close();
+    
+    res.json({
+
+      "message" : "Request is Submitted Successfully"
+
+    })
+  
   } catch (error) {
     console.log(error);
   }
