@@ -32,7 +32,7 @@ router.post('/signUp',async function(req,res){
 
       let data1 = await db.collection("Cart").insertOne({
 
-        "handle" : req.body.email,
+        "email" : req.body.email,
         cart : []
         
       })

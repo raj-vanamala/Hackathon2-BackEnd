@@ -92,7 +92,9 @@ router.get('/loadProductsInCart:email',async function(req,res){
     let client = await MongoDb.connect(url);
     let db = await client.db("users");
 
-    let data = await db.collection("Cart").find({handle : req.params.email}).toArray()
+    let data = await db.collection("Cart").find({email : req.params.email}).toArray()
+
+    console.log(data)
 
     res.json({
       "data" : data
