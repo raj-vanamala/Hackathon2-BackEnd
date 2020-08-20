@@ -38,7 +38,7 @@ router.get('/loadProducts',async function(req,res){
       let client = await MongoDb.connect(url);
       let db = await client.db("EquipmentRentalSystem");
   
-      let data = await db.collection("product").find().toArray()
+      let data = await db.collection("products").find().toArray()
   
       res.json({
         "data" : data
