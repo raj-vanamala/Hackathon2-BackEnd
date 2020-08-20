@@ -10,9 +10,9 @@ router.post('/addProduct',async function(req,res){
 
       let url = process.env.DB1;
       let client = await MongoDb.connect(url);
-      let db = await client.db("users");
+      let db = await client.db("EquipmentRentalSystem");
     
-      let data = await db.collection("products1").insertOne({
+      let data = await db.collection("products").insertOne({
 
         "productName" : req.body.productName,
         "productPrice" : req.body.productPrice,
@@ -36,7 +36,7 @@ router.get('/loadProducts',async function(req,res){
   
       let url = process.env.DB1;
       let client = await MongoDb.connect(url);
-      let db = await client.db("users");
+      let db = await client.db("EquipmentRentalSystem");
   
       let data = await db.collection("products1").find().toArray()
   
@@ -57,7 +57,7 @@ router.post('/addProductToCart',async function(req,res){
 
     let url = process.env.DB1;
     let client = await MongoDb.connect(url);
-    let db = await client.db("users");
+    let db = await client.db("EquipmentRentalSystem");
 
     let data = await db.collection("Cart").updateOne(
     {
@@ -90,14 +90,14 @@ router.get('/loadProductsInCart:email',async function(req,res){
 
     let url = process.env.DB1;
     let client = await MongoDb.connect(url);
-    let db = await client.db("users");
+    let db = await client.db("EquipmentRentalSystem");
 
     let data = await db.collection("Cart").find({email : req.params.email}).toArray()
 
     console.log(data)
 
     res.json({
-      "data" : data
+      "data" : data[0].cart 
     })
   
   } catch (error) {

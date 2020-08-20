@@ -20,9 +20,9 @@ router.post('/signUp',async function(req,res){
 
       let url = process.env.DB1;
       let client = await MongoDb.connect(url);
-      let db = await client.db("users");
+      let db = await client.db("EquipmentRentalSystem");
     
-      let data = await db.collection("hack2Users").insertOne({
+      let data = await db.collection("Users").insertOne({
 
         "email" : req.body.email,
         "firstName" : req.body.firstName,
@@ -64,9 +64,9 @@ router.post('/signIn',async function(req,res){
 
     let url = process.env.DB1;
     let client = await MongoDb.connect(url);
-    let db = await client.db("users");
+    let db = await client.db("EquipmentRentalSystem");
 
-      let user = await db.collection("hack2Users").findOne({email : req.body.email})
+      let user = await db.collection("Users").findOne({email : req.body.email})
 
       let result = await bcrypt.compare(req.body.password,user.password)
       if(result === true) {
@@ -101,9 +101,9 @@ router.post('/submitRequest',async function(req,res){
 
     let url = process.env.DB1;
     let client = await MongoDb.connect(url);
-    let db = await client.db("users");
+    let db = await client.db("EquipmentRentalSystem");
   
-    let data = await db.collection("userRequests").insertOne({
+    let data = await db.collection("UserRequests").insertOne({
 
       "email" : req.body.email,
       "firstName" : req.body.firstName,
