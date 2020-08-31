@@ -86,6 +86,8 @@ router.post('/addProductToCart',async function(req,res){
 
 router.get('/loadProductsInCart:email',async function(req,res){
 
+  console.log('enter')
+
   try {
 
     let url = process.env.DB1;
@@ -98,6 +100,56 @@ router.get('/loadProductsInCart:email',async function(req,res){
 
     res.json({
       "data" : data[0].cart 
+    })
+  
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.post('/addProductToOrders',async function(req,res){
+
+  console.log(req.body.productInfo)
+
+  try {
+
+    let url = process.env.DB1;
+    let client = await MongoDb.connect(url);
+    let db = await client.db("EquipmentRentalSystem");
+
+    let data1 = await db.collection("Orders").find({"email" : req.body.email}).toArray()
+    
+    let data = await db.collection("Orders").updateOne(
+    {
+      "email" : req.body.email
+    },
+    {
+      $push : { products : req.body.productInfo },
+      $set: { "Total Products" :  data1[0].products.length+1, "Total Price" : Number(data1[0]["Total Price"])+Number(req.body.productInfo.Price)}
+    }
+    )
+
+    res.json({
+      "message" : "Product Added Successfully To Your Final Payment List"
+    })
+  
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.get('/paymentInfo/:email',async function(req,res){
+
+  try {
+
+    let url = process.env.DB1;
+    let client = await MongoDb.connect(url);
+    let db = await client.db("EquipmentRentalSystem");
+
+    let data = await db.collection("Orders").find({"email" : req.params.email}).toArray()
+
+    res.json({
+      "data" : data[0]
     })
   
   } catch (error) {

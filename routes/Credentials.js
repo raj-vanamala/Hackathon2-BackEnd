@@ -37,6 +37,15 @@ router.post('/signUp',async function(req,res){
         
       })
 
+      let data2 = await db.collection("Orders").insertOne({
+
+        "email" : req.body.email,
+        "products" : [],
+        "Total Products" : "",
+        "Total Price" : ""
+        
+      })
+
       let jwtToken = await jwt.sign({email : req.body.email,firstName : req.body.firstName},process.env.JWT,{expiresIn : "1h"}) 
       await client.close();
       
