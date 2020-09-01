@@ -3,6 +3,13 @@ var router = express.Router();
 const MongoDb = require('mongodb');
 var jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config();
+const razorPay = require('razorpay');
+const shortId = require('shortid');
+
+const instance = new razorPay({
+  key_id: process.env.RAZORPAY_TEST_KEY,
+  key_secret: process.env.RAZORPAY_SECRET_KEY,
+});
 
 router.post('/addProduct',async function(req,res){
 
@@ -154,6 +161,34 @@ router.get('/paymentInfo/:email',async function(req,res){
   
   } catch (error) {
     console.log(error);
+  }
+})
+
+router.post('/razorPay',async function(req,res){
+
+  try {
+
+    const payment_capture = 1
+    const amount = 100
+    const currency = 'INR'
+
+    const options = {
+    amount : (amount * 100).toString(), 
+    currency, 
+    receipt: shortId.generate(), 
+    payment_capture
+    }
+
+    const response = await instance.orders.create(options)
+    console.log(response)
+    res.json({
+      id:response.id,
+      currency : 'INR',
+      amount : response.amount
+    })
+    
+  } catch (error) {
+    console.log(error)
   }
 })
 
