@@ -37,6 +37,13 @@ router.post('/signUp',async function(req,res){
         
       })
 
+      let data3 = await db.collection("MyOrders").insertOne({
+
+        "email" : req.body.email,
+        orders : []
+        
+      })
+
       let data2 = await db.collection("Orders").insertOne({
 
         "email" : req.body.email,

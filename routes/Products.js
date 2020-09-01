@@ -46,6 +46,7 @@ router.get('/loadProducts',async function(req,res){
       let db = await client.db("EquipmentRentalSystem");
   
       let data = await db.collection("products").find().toArray()
+      await client.close();
   
       res.json({
         "data" : data
@@ -57,8 +58,6 @@ router.get('/loadProducts',async function(req,res){
 })
 
 router.post('/addProductToCart',async function(req,res){
-
-  console.log(req.body)
 
   try {
 
@@ -81,6 +80,7 @@ router.post('/addProductToCart',async function(req,res){
       }
     }
     )
+    await client.close();
 
     res.json({
       "message" : "Product Added Successfully To Your Cart"
@@ -93,8 +93,6 @@ router.post('/addProductToCart',async function(req,res){
 
 router.get('/loadProductsInCart:email',async function(req,res){
 
-  console.log('enter')
-
   try {
 
     let url = process.env.DB1;
@@ -102,8 +100,7 @@ router.get('/loadProductsInCart:email',async function(req,res){
     let db = await client.db("EquipmentRentalSystem");
 
     let data = await db.collection("Cart").find({email : req.params.email}).toArray()
-
-    console.log(data)
+    await client.close();
 
     res.json({
       "data" : data[0].cart 
@@ -115,8 +112,6 @@ router.get('/loadProductsInCart:email',async function(req,res){
 })
 
 router.post('/addProductToOrders',async function(req,res){
-
-  console.log(req.body.productInfo)
 
   try {
 
@@ -136,6 +131,16 @@ router.post('/addProductToOrders',async function(req,res){
     }
     )
 
+    let data2 = await db.collection("Cart").updateOne(
+      {
+        "email" : req.body.email
+      },
+      {
+        $pull : { cart : { productName : req.body.productInfo.productName} } 
+      }
+      )
+      await client.close();
+
     res.json({
       "message" : "Product Added Successfully To Your Final Payment List"
     })
@@ -154,6 +159,7 @@ router.get('/paymentInfo/:email',async function(req,res){
     let db = await client.db("EquipmentRentalSystem");
 
     let data = await db.collection("Orders").find({"email" : req.params.email}).toArray()
+    await client.close();
 
     res.json({
       "data" : data[0]
@@ -164,12 +170,19 @@ router.get('/paymentInfo/:email',async function(req,res){
   }
 })
 
-router.post('/razorPay',async function(req,res){
+router.get('/razorPay/:email',async function(req,res){
 
   try {
 
+    let url = process.env.DB1;
+    let client = await MongoDb.connect(url);
+    let db = await client.db("EquipmentRentalSystem");
+
+    let data = await db.collection("Orders").find({"email" : req.params.email}).toArray()
+    await client.close();
+
     const payment_capture = 1
-    const amount = 100
+    const amount = data[0]["Total Price"]
     const currency = 'INR'
 
     const options = {
@@ -189,6 +202,62 @@ router.post('/razorPay',async function(req,res){
     
   } catch (error) {
     console.log(error)
+  }
+})
+
+router.post('/addProductsToMyOrders',async function(req,res){
+
+  try {
+
+    let url = process.env.DB1;
+    let client = await MongoDb.connect(url);
+    let db = await client.db("EquipmentRentalSystem");
+    
+    let data = await db.collection("MyOrders").updateOne(
+    {
+      "email" : req.body.email
+    },
+    {
+      $push : { orders : req.body }
+    }
+    )
+
+    let data1 = await db.collection("Orders").updateOne(
+      {
+        "email" : req.body.email
+      },
+      {
+        $set: { products : [],"Total Products" :  "", "Total Price" : ""}
+      }
+      )
+      await client.close();
+
+    res.json({
+      "message" : "Product Added Successfully To Your Final Payment List"
+    })
+  
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.get('/loadMyOrders/:email',async function(req,res){
+
+  try {
+
+    let url = process.env.DB1;
+    let client = await MongoDb.connect(url);
+    let db = await client.db("EquipmentRentalSystem");
+
+    let data = await db.collection("MyOrders").find({"email" : req.params.email}).toArray()
+    await client.close();
+    
+    res.json({
+      "data" : data[0].orders
+    })
+  
+  } catch (error) {
+    console.log(error);
   }
 })
 
