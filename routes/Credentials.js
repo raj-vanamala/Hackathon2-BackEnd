@@ -84,6 +84,7 @@ router.post('/signIn',async function(req,res){
 
       let user = await db.collection("Users").findOne({email : req.body.email})
 
+      console.log(req.body.password)
       let result = await bcrypt.compare(req.body.password,user.password)
       if(result === true) {
         

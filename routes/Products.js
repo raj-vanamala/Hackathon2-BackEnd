@@ -37,6 +37,27 @@ router.post('/addProduct',async function(req,res){
     }
 })
 
+router.delete('/deleteProduct',async function(req,res){
+
+  try {
+
+    let url = process.env.DB1;
+    let client = await MongoDb.connect(url);
+    let db = await client.db("EquipmentRentalSystem");
+  
+    let data = await db.collection("products").deleteOne({"productName" : req.body.productName})
+    await client.close();
+    
+    res.json({
+
+      "message" : "Product Deleted Successfully"
+    })
+  
+  } catch (error) {
+    console.log(error);
+  }
+})
+
 router.get('/loadProducts',async function(req,res){
 
     try {
