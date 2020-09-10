@@ -141,4 +141,33 @@ router.post('/submitRequest',async function(req,res){
   }
 })
 
+router.post('/submitRequest',async function(req,res){
+
+  try {
+
+    let url = process.env.DB1;
+    let client = await MongoDb.connect(url);
+    let db = await client.db("EquipmentRentalSystem");
+  
+    let data = await db.collection("UserRequests").insertOne({
+
+      "email" : req.body.email,
+      "firstName" : req.body.name,
+      "mobile" : req.body.mobile,
+      "RequestInfo" : req.body.message
+    })
+
+    await client.close();
+    
+    res.json({
+
+      "message" : "Your Message has been sent successfully!!"
+
+    })
+  
+  } catch (error) {
+    console.log(error);
+  }
+})
+
 module.exports = router;
