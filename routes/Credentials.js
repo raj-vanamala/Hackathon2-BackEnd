@@ -141,7 +141,7 @@ router.post('/submitRequest',async function(req,res){
   }
 })
 
-router.post('/submitRequest',async function(req,res){
+router.post('/sendMessage',async function(req,res){
 
   try {
 
@@ -149,7 +149,7 @@ router.post('/submitRequest',async function(req,res){
     let client = await MongoDb.connect(url);
     let db = await client.db("EquipmentRentalSystem");
   
-    let data = await db.collection("UserRequests").insertOne({
+    let data = await db.collection("portfolioMessages").insertOne({
 
       "email" : req.body.email,
       "firstName" : req.body.name,
